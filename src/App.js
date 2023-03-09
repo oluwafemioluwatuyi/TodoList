@@ -1,7 +1,7 @@
 import React, {Component, useState, useEffect} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faCircleCheck, faPen, faTrash
+    faCircleCheck, faPen, fas, faTrash
 } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 
@@ -13,9 +13,9 @@ function App(){
 
     // Tasks state
 
-    const[toDo, setToDO] = useState([
-        {"id" :2, "title": "Task 2", "status": false},
-        {"id" :1, "title": "Task 1", "status": false},
+    const[toDo, setToDO] = useState([ 
+        // {"id" :2, "title": "Task 2", "status": false},
+        // {"id" :1, "title": "Task 1", "status": false},
     ]);
 
     //Temp State
@@ -38,31 +38,62 @@ function App(){
 
     //delete Task
 
-    const deleteTask=()=>{
+    const deleteTask=(id)=>{
+        let newTasks = toDo.filter
+        ( task => task.id !== id);
+        setToDO(newTasks);
 
-    }
+        }
+
+       
+
+
+
 
     // Mark Task as done or completed
 
-    const markDone=()=>{
+    const markDone=(id)=>{
+        let newTask = toDo.map(task=>{
+            if(task.id===id){
+                return({...task, status: !task.status})
+            }
+
+            return task
+        })
+
+        setToDO(newTask)
+
 
     }
 
     //Cancel update
 
     const cancelUpdate=()=>{
+        setupdateTask('');
 
     }
 
     // Change Task for update
 
-    const changeTask=()=>{
+    const changeTask=(e)=>{
+        let newEntry = {
+            id: updateTask.id,
+            title:e.target.value,
+            status: updateTask.status ? true : false
+        }
 
+        setupdateTask(newEntry)
+
+ 
     }
     
     //update task
 
     const updatesTask=()=>{
+        let filterRecords =  [...toDo].filter( task => task.id !== updateTask.id);
+        let updateObject = [...filterRecords, updateTask]
+        setToDO(updateObject);
+        setupdateTask('')
 
     }
     
@@ -72,30 +103,37 @@ function App(){
             <h1>To Do List App(ReactJS)</h1>
              <br></br> 
 
-             {/* update task */}
+             {updateTask && updateTask ? (
 
-             <div className='row'>
-                    <div className='col'>
-                        <input
-                          className='form-control form-control-lg'/>
+                <div>
+                    <div className='row'>
+                        <div className='col'>
+                            <input
+                            value={updateTask && updateTask.title}
+                            onChange={ (e) => changeTask(e)}
+                            className='form-control form-control-lg'/>
+                        </div>
+
+                        <div className='col-auto'>
+                            <button
+                                onClick={updatesTask}
+                            className='btn btn-lg btn-success mr-20'>
+                                Update
+                            </button>
+
+                            <button
+                            onClick={cancelUpdate}
+                            className='btn btn-lg btn-warning mr-20'>
+                                Cancel
+                                
+                            </button>
+                        </div>
                     </div>
-
-                    <div className='col-auto'>
-                        <button
-                        className='btn btn-lg btn-success mr-20'>
-                            Update
-                        </button>
-
-                        <button
-                        className='btn btn-lg btn-warning mr-20'>
-                            Cancel
-                        </button>
-                    </div>
+                    <br/>
                 </div>
-                <br/>
 
-
-            {/* Add task  */}
+             ) : (
+                <div>
                 <div className='row'>
                     <div className='col'>
                         <input
@@ -113,6 +151,18 @@ function App(){
                     </div>
                 </div>
                 <br/>
+                </div>
+
+             )}
+
+             {/* update task */}
+
+            
+              
+
+
+            {/* Add task  */}
+               
 
 
              {/* {Display Todos} */}
@@ -133,15 +183,26 @@ function App(){
                             <div className={task.status ? 'done' : ''}>
                             <span className='taskNumber'>{index + 1}</span>
                             <span className='taskText'>{task.title}</span>
-                            </div>
+                            </div> 
                             <div className='iconswrap'>
-                                <span title='Completed / Not Completed'>
+                                <span title='Completed / Not Completed'
+                                  onClick={() => markDone(task.id)}>
                                     <FontAwesomeIcon icon={faCircleCheck}/>
                                 </span>
-                                <span title='Edit'>
-                                    <FontAwesomeIcon icon={faPen}/>   
-                                </span>
-                                <span title='delete'>
+
+                                {task.status ? null : (
+                                        <span title='Edit'
+                                            onClick={ () => setupdateTask({
+                                                id: task.id,
+                                                title: task.title,
+                                                status: task.status ? true : false 
+                                            })}>                             
+                                        <FontAwesomeIcon icon={faPen}/>   
+                                        </span>  
+                                        )}
+                              
+                                <span title='delete'
+                                 onClick={ () => deleteTask(task.id)}>
                                     <FontAwesomeIcon icon={faTrash}/>   
                                 </span>
                             </div>
